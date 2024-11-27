@@ -48,20 +48,16 @@ const App = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <input 
-        type="text" 
-        placeholder="Поиск по сервисам..." 
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)} 
+      <h1 className="text-3xl font-bold mb-4 text-center">Диспетчер паролей</h1>
+      <input
+        type="text"
+        placeholder="Поиск по сервисам..."
         className="border p-2 rounded w-full mb-4"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
       />
-      <div className="flex flex-col md:flex-row justify-center items-center space-y-2 md:space-y-0 md:space-x-2 mb-4">
-        <button 
-          onClick={toggleModal} 
-          className="bg-blue-500 text-white p-2 rounded w-full md:w-auto transition duration-200 hover:bg-blue-600"
-        >
-          Добавить пароль
-        </button>
+      <div className="flex justify-center space-x-2 mb-4">
+        <button onClick={toggleModal} className="bg-blue-500 text-white p-1 rounded">+</button>
         <GeneratePassword addPassword={addPassword} />
       </div>
       <PasswordList passwords={filteredPasswords} deletePassword={deletePassword} />
