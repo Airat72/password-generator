@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import PasswordModal from './components/PasswordModal';
 import PasswordList from './components/PasswordList';
 import GeneratePassword from './components/GeneratePassword';
+import './App.css';
+
 
 const App = () => {
   const [passwords, setPasswords] = useState([]);
@@ -16,20 +18,33 @@ const App = () => {
   const toggleModal = () => setModalOpen(!isModalOpen);
 
   const addPassword = async (service, password) => {
-    const newPassword = { service, password };
-    const updatedPasswords = [...passwords, newPassword];
-    setPasswords(updatedPasswords);
-    localStorage.setItem('passwords', JSON.stringify(updatedPasswords));
-    return true;
+    const response = await simulateServerRequest();
+    if (response) {
+      const newPassword = { id: Date.now(), service, password };
+      const updatedPasswords = [...passwords, newPassword];
+      setPasswords(updatedPasswords);
+      localStorage.setItem('passwords', JSON.stringify(updatedPasswords));
+      return true;
+    }
+    return false;
   };
 
-  const deletePassword = (service) => {
-    const updatedPasswords = passwords.filter(p => p.service !== service);
-    setPasswords(updatedPasswords);
-    localStorage.setItem('passwords', JSON.stringify(updatedPasswords));
+  const simulateServerRequest = () => {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve(Math.random() < 0.5); // 50% вероятность успеха
+      }, 1000);
+    });
   };
 
-  const filteredPasswords = passwords.filter(p => 
+  const deletePassword = (id) => {
+    const updatedPasswords = passwords.filter(p => p.id !== id);
+    setPasswords(updatedPasswords);
+    localStorage.setItem('passwords', JSON.stringify(updatedPasswords));
+    console.log('Пароль удален:', id); 
+  };
+
+  const filteredPasswords = passwords.filter(p =>
     p.service.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
