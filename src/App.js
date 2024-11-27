@@ -3,29 +3,27 @@ import React, { useState, useEffect } from 'react';
 import PasswordModal from './components/PasswordModal';
 import PasswordList from './components/PasswordList';
 import GeneratePassword from './components/GeneratePassword';
-import './App.css';
-
 
 const App = () => {
   const [passwords, setPasswords] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-
+  
   useEffect(() => {
     const storedPasswords = JSON.parse(localStorage.getItem('passwords')) || [];
     setPasswords(storedPasswords);
   }, []);
-
+  
   const toggleModal = () => setModalOpen(!isModalOpen);
-
+  
   const addPassword = async (service, password) => {
     const response = await simulateServerRequest();
-    if (response) {
-      const newPassword = { id: Date.now(), service, password };
-      const updatedPasswords = [...passwords, newPassword];
-      setPasswords(updatedPasswords);
-      localStorage.setItem('passwords', JSON.stringify(updatedPasswords));
-      return true;
+    if(response){
+        const newPassword = { service, password };
+        const updatedPasswords = [...passwords, newPassword];
+        setPasswords(updatedPasswords);
+        localStorage.setItem('passwords', JSON.stringify(updatedPasswords));
+        return true;
     }
     return false;
   };
@@ -38,29 +36,32 @@ const App = () => {
     });
   };
 
-  const deletePassword = (id) => {
-    const updatedPasswords = passwords.filter(p => p.id !== id);
+  const deletePassword = (service) => {
+    const updatedPasswords = passwords.filter(p => p.service !== service);
     setPasswords(updatedPasswords);
     localStorage.setItem('passwords', JSON.stringify(updatedPasswords));
-    console.log('Пароль удален:', id); 
   };
 
-  const filteredPasswords = passwords.filter(p =>
+  const filteredPasswords = passwords.filter(p => 
     p.service.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4 text-center">Диспетчер паролей</h1>
-      <input
-        type="text"
-        placeholder="Поиск по сервисам..."
-        className="border p-2 rounded w-full mb-4"
+      <input 
+        type="text" 
+        placeholder="Поиск по сервисам..." 
         value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        onChange={(e) => setSearchTerm(e.target.value)} 
+        className="border p-2 rounded w-full mb-4"
       />
-      <div className="flex justify-center space-x-2 mb-4">
-        <button onClick={toggleModal} className="bg-blue-500 text-white p-2 rounded">Добавить пароль</button>
+      <div className="flex flex-col md:flex-row justify-center items-center space-y-2 md:space-y-0 md:space-x-2 mb-4">
+        <button 
+          onClick={toggleModal} 
+          className="bg-blue-500 text-white p-2 rounded w-full md:w-auto transition duration-200 hover:bg-blue-600"
+        >
+          Добавить пароль
+        </button>
         <GeneratePassword addPassword={addPassword} />
       </div>
       <PasswordList passwords={filteredPasswords} deletePassword={deletePassword} />
